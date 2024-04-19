@@ -35,13 +35,15 @@ export default function App() {
       {screen === "color" && (
         <PickColorScreen setColor={setColor} setScreen={setScreen} />
       )}
-      <Camera
-        onMountError={(e) => alert(JSON.stringify(e))}
-        ref={cameraRef}
-        style={styles.cameraStyle}
-        type={CameraType.front}
-      ></Camera>
-      <Toolbar setScreen={setScreen} takePicture={takePicture} />
+      {screen === "home" && (
+        <Camera
+          onMountError={(e) => alert(JSON.stringify(e))}
+          ref={cameraRef}
+          style={styles.cameraStyle}
+          type={CameraType.front}
+        ></Camera>
+      )}
+      <Toolbar color={color} setScreen={setScreen} takePicture={takePicture} />
     </View>
   )
 }
@@ -50,9 +52,8 @@ const styles = StyleSheet.create({
   cameraStyle: {
     alignSelf: "center",
     height: 100,
-    // left: 200,
     position: "absolute",
-    bottom: 150,
+    top: 100,
     width: 100,
   },
   container: {

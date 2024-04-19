@@ -1,18 +1,30 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
-import { StyleSheet, Text, View } from "react-native"
-import type { Screen } from "../types"
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import type { Color, Screen } from "../types"
 import * as Brightness from "expo-brightness"
 import { Camera, CameraType } from "expo-camera"
 
+function getButtonTextColor(color: Color) {
+  switch (color) {
+    case "#00ffff":
+    case "#ffff00":
+    case "#00ff00":
+      return "#000"
+    default:
+      return "#fff"
+  }
+}
+
 export function Toolbar({
+  color,
   setScreen,
   takePicture,
 }: {
+  color: Color
   setScreen: Dispatch<SetStateAction<Screen>>
   takePicture: Function
 }) {
   const [oldBrightness, setOldBrightness] = useState(0)
-  const [whichFunc, setWhichFunc] = useState(0)
 
   useEffect(() => {
     Brightness.getBrightnessAsync()
@@ -21,31 +33,27 @@ export function Toolbar({
   }, [])
 
   const handlePhotoPress = () => {
-    if (whichFunc === 0) {
-      Brightness.setBrightnessAsync(100)
-        .then(() => {
-          setWhichFunc(1)
-          setTimeout(() => {
-            takePicture().then(Brightness.setBrightnessAsync(oldBrightness))
-          }, 1000)
-        })
-        .catch((e) => console.log(e))
-    } else {
-      Brightness.setBrightnessAsync(oldBrightness).then(() => setWhichFunc(0))
-    }
+    Brightness.setBrightnessAsync(100)
+      .then(() => {
+        setTimeout(() => {
+          takePicture().then(Brightness.setBrightnessAsync(oldBrightness))
+        }, 2000)
+      })
+      .catch((e) => console.log(e))
   }
 
   return (
     <View style={styles.container}>
-      <Text onPress={() => setScreen("color")} style={styles.item}>
-        Pick color
-      </Text>
-      <Text onPress={handlePhotoPress} style={styles.item}>
-        Take photo
-      </Text>
-      <Text onPress={() => setScreen("home")} style={styles.item}>
-        Show color
-      </Text>
+      <TouchableOpacity onPress={() => setScreen("color")} style={styles.item}>
+        <Text style={[styles.itemText, { color: getButtonTextColor(color) }]}>
+          Pick color
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handlePhotoPress} style={styles.item}>
+        <Text style={[styles.itemText, { color: getButtonTextColor(color) }]}>
+          Take photo
+        </Text>
+      </TouchableOpacity>
     </View>
   )
 }
@@ -60,9 +68,10 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   item: {
-    color: "#fff",
+    width: "50%",
+  },
+  itemText: {
     fontSize: 18,
     textAlign: "center",
-    width: "33%",
   },
 })
