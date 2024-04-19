@@ -1,17 +1,32 @@
 import { StyleSheet, Text, View } from "react-native"
 import { ColorCell } from "../components/ColorCell"
+import { Dispatch, SetStateAction } from "react"
+import type { Color, Screen } from "../types"
 
-export function PickColorScreen() {
+export function PickColorScreen({
+  setColor,
+  setScreen,
+}: {
+  setColor: Dispatch<SetStateAction<Color>>
+  setScreen: Dispatch<SetStateAction<Screen>>
+}) {
   return (
     <View style={styles.container}>
-      <ColorCell hex="#f00" />
-      <ColorCell hex="#0f0" />
-      <ColorCell hex="#00f" />
-      <ColorCell hex="#fa0" />
-      <ColorCell hex="#ff0" />
-      <ColorCell hex="#0ff" />
-      <ColorCell hex="#f0f" />
-      <ColorCell hex="#6a49fd" />
+      <View style={styles.row}>
+        <ColorCell hex="#ff0000" setColor={setColor} setScreen={setScreen} />
+        <ColorCell hex="#00ff00" setColor={setColor} setScreen={setScreen} />
+        <ColorCell hex="#0000ff" setColor={setColor} setScreen={setScreen} />
+      </View>
+      <View style={styles.row}>
+        <ColorCell hex="#ffaa00" setColor={setColor} setScreen={setScreen} />
+        <ColorCell hex="#ffff00" setColor={setColor} setScreen={setScreen} />
+        <ColorCell hex="#00ffff" setColor={setColor} setScreen={setScreen} />
+      </View>
+      <View style={styles.row}>
+        <ColorCell hex="#ff88ff" setColor={setColor} setScreen={setScreen} />
+        <ColorCell hex="#ff00ff" setColor={setColor} setScreen={setScreen} />
+        <ColorCell hex="#6a49fd" setColor={setColor} setScreen={setScreen} />
+      </View>
     </View>
   )
 }
@@ -21,7 +36,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#334",
     flex: 1,
-    flexDirection: "row",
+    flexGrow: 1,
     justifyContent: "center",
+  },
+  row: {
+    flexDirection: "row",
   },
 })
