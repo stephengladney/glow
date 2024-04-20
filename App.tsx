@@ -11,16 +11,9 @@ import * as MediaLibrary from "expo-media-library"
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home")
   const [color, setColor] = useState<Color>("#ff0000")
-  const [countdown, setCountdown] = useState(0)
   const [status, requestCameraPermission] = Camera.useCameraPermissions()
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const cameraRef = useRef(null)
-
-  const takePicture = async () => {
-    if (cameraRef.current) {
-      const photo = await cameraRef.current.takePictureAsync()
-      await MediaLibrary.createAssetAsync(photo.uri)
-    }
-  }
 
   useEffect(() => {
     Brightness.requestPermissionsAsync().then(() => {
@@ -29,6 +22,18 @@ export default function App() {
       })
     })
   }, [])
+
+  useEffect(() => {
+    if (showConfirmation) setTimeout(() => setShowConfirmation(false), 1000)
+  }, [showConfirmation])
+
+  const takePicture = async () => {
+    if (cameraRef.current) {
+      const photo = await cameraRef.current.takePictureAsync()
+      await MediaLibrary.createAssetAsync(photo.uri)
+      setShowConfirmation(true)
+    }
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: color }]}>
@@ -43,6 +48,9 @@ export default function App() {
           style={styles.cameraStyle}
           type={CameraType.front}
         ></Camera>
+      )}
+      {showConfirmation && (
+        <Text style={styles.confirmationText}>Photo taken!</Text>
       )}
       <Toolbar
         color={color}
@@ -68,5 +76,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#000",
     alignItems: "stretch",
     justifyContent: "center",
+  },
+  confirmationText: {
+    color: "#fff",
+    fontSize: 40,
+    textAlign: "center",
   },
 })
