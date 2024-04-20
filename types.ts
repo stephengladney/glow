@@ -1,6 +1,7 @@
 export type Screen = "home" | "color" | "brightness"
 
 export type Color =
+  | string
   | "#ff0000"
   | "#00ff00"
   | "#0000ff"

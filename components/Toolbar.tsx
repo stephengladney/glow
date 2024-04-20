@@ -3,8 +3,9 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import type { Color, Screen } from "../types"
 import * as Brightness from "expo-brightness"
 import { Camera, CameraType } from "expo-camera"
+import Ionicons from "@expo/vector-icons/Ionicons"
 
-function getButtonTextColor(color: Color) {
+function getButtonColor(color: Color) {
   switch (color) {
     case "#00ffff":
     case "#ffff00":
@@ -15,16 +16,21 @@ function getButtonTextColor(color: Color) {
   }
 }
 
+type ActionType = "photo" | "preview"
+
 export function Toolbar({
   color,
+  screen,
   setScreen,
   takePicture,
 }: {
   color: Color
+  screen: Screen
   setScreen: Dispatch<SetStateAction<Screen>>
   takePicture: Function
 }) {
   const [oldBrightness, setOldBrightness] = useState(0)
+  const [actionButton, setActionButton] = useState<ActionType>("preview")
 
   useEffect(() => {
     Brightness.getBrightnessAsync()
@@ -33,27 +39,66 @@ export function Toolbar({
   }, [])
 
   const handlePhotoPress = () => {
-    Brightness.setBrightnessAsync(100)
-      .then(() => {
-        setTimeout(() => {
-          takePicture().then(Brightness.setBrightnessAsync(oldBrightness))
-        }, 2000)
-      })
-      .catch((e) => console.log(e))
+    takePicture().then(() => {
+      Brightness.setBrightnessAsync(oldBrightness)
+      setActionButton("preview")
+    })
+  }
+
+  const handlePreviewPress = () => {
+    Brightness.setBrightnessAsync(1).then(() => {
+      setActionButton("photo")
+    })
   }
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => setScreen("color")} style={styles.item}>
-        <Text style={[styles.itemText, { color: getButtonTextColor(color) }]}>
-          Pick color
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={handlePhotoPress} style={styles.item}>
-        <Text style={[styles.itemText, { color: getButtonTextColor(color) }]}>
-          Take photo
-        </Text>
-      </TouchableOpacity>
+      {screen === "home" && (
+        <>
+          <TouchableOpacity
+            onPress={() => setScreen("color")}
+            style={styles.item}
+          >
+            <Ionicons
+              name="eyedrop-outline"
+              size={35}
+              style={[styles.itemText, { color: getButtonColor(color) }]}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={
+              actionButton === "photo" ? handlePhotoPress : handlePreviewPress
+            }
+            style={styles.item}
+          >
+            <Ionicons
+              name={
+                actionButton === "photo" ? "camera-outline" : "sunny-outline"
+              }
+              size={35}
+              style={[styles.itemText, { color: getButtonColor(color) }]}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={
+              actionButton === "photo" ? handlePhotoPress : handlePreviewPress
+            }
+            style={styles.item}
+          >
+            <Ionicons name="close" size={35} color={getButtonColor(color)} />
+          </TouchableOpacity>
+        </>
+      )}
+      {screen === "color" && (
+        <TouchableOpacity
+          onPress={() => setScreen("home")}
+          style={{ alignSelf: "center" }}
+        >
+          <Text style={[styles.itemText, { color: getButtonColor(color) }]}>
+            Back
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   )
 }
@@ -63,15 +108,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     bottom: 0,
     flexDirection: "row",
+    justifyContent: "space-evenly",
     paddingBottom: 60,
     position: "absolute",
     zIndex: 2,
+    width: "100%",
   },
   item: {
-    width: "50%",
+    padding: 25,
   },
   itemText: {
-    fontSize: 18,
     textAlign: "center",
   },
 })

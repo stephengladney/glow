@@ -11,7 +11,8 @@ import * as MediaLibrary from "expo-media-library"
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home")
   const [color, setColor] = useState<Color>("#ff0000")
-  const [status, requestPermission] = Camera.useCameraPermissions()
+  const [countdown, setCountdown] = useState(0)
+  const [status, requestCameraPermission] = Camera.useCameraPermissions()
   const cameraRef = useRef(null)
 
   const takePicture = async () => {
@@ -23,7 +24,7 @@ export default function App() {
 
   useEffect(() => {
     Brightness.requestPermissionsAsync().then(() => {
-      requestPermission().then(() => {
+      requestCameraPermission().then(() => {
         MediaLibrary.requestPermissionsAsync()
       })
     })
@@ -33,7 +34,7 @@ export default function App() {
     <View style={[styles.container, { backgroundColor: color }]}>
       <StatusBar style="auto" />
       {screen === "color" && (
-        <PickColorScreen setColor={setColor} setScreen={setScreen} />
+        <PickColorScreen color={color} setColor={setColor} />
       )}
       {screen === "home" && (
         <Camera
@@ -43,7 +44,12 @@ export default function App() {
           type={CameraType.front}
         ></Camera>
       )}
-      <Toolbar color={color} setScreen={setScreen} takePicture={takePicture} />
+      <Toolbar
+        color={color}
+        screen={screen}
+        setScreen={setScreen}
+        takePicture={takePicture}
+      />
     </View>
   )
 }
