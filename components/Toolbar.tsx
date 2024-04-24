@@ -5,8 +5,20 @@ import * as Brightness from "expo-brightness"
 import type { ActionType } from "../types"
 import Ionicons from "@expo/vector-icons/Ionicons"
 
+function getButtonColor(color: string) {
+  switch (color) {
+    case "#00ffff":
+    case "#ffff00":
+    case "#00ff00":
+      return "#000"
+    default:
+      return "#fff"
+  }
+}
+
 export function Toolbar({
   actionButton,
+  color,
   oldBrightness,
   screen,
   setActionButton,
@@ -47,7 +59,7 @@ export function Toolbar({
             <Ionicons
               name="color-filter-outline"
               size={35}
-              style={styles.itemText}
+              color={getButtonColor(color)}
             />
           </TouchableOpacity>
           <TouchableOpacity
@@ -58,7 +70,7 @@ export function Toolbar({
               styles.item,
               actionButton === "photo" && {
                 borderRadius: 50,
-                borderColor: "#fff",
+                borderColor: getButtonColor(color),
                 borderWidth: 2,
               },
             ]}
@@ -68,12 +80,12 @@ export function Toolbar({
                 actionButton === "photo" ? "camera-outline" : "sunny-outline"
               }
               size={35}
-              style={styles.itemText}
+              color={getButtonColor(color)}
             />
           </TouchableOpacity>
           {actionButton === "photo" && (
             <TouchableOpacity onPress={handleCancelPress} style={styles.item}>
-              <Ionicons name="close" size={35} color="#fff" />
+              <Ionicons name="close" size={35} color={getButtonColor(color)} />
             </TouchableOpacity>
           )}
         </>

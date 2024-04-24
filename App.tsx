@@ -22,17 +22,18 @@ export default function App() {
 
   useEffect(() => {
     Brightness.requestPermissionsAsync().then(() => {
-      requestCameraPermission().then(() => {
-        MediaLibrary.requestPermissionsAsync()
-      })
+      Brightness.getBrightnessAsync()
+        .then((val) => {
+          setOldBrightness(val)
+          requestCameraPermission().then(() => {
+            MediaLibrary.requestPermissionsAsync()
+          })
+        })
+        .catch((e) => alert(JSON.stringify(e)))
     })
   }, [])
 
-  useEffect(() => {
-    Brightness.getBrightnessAsync()
-      .then((val) => setOldBrightness(val))
-      .catch((e) => alert(JSON.stringify(e)))
-  }, [])
+  useEffect(() => {}, [])
 
   useEffect(() => {
     if (isCountingDown) {
@@ -74,7 +75,11 @@ export default function App() {
     <View style={[styles.container, { backgroundColor: color }]}>
       <StatusBar style="auto" />
       {screen === "color" && (
-        <PickColorScreen color={color} setColor={setColor} />
+        <PickColorScreen
+          color={color}
+          setColor={setColor}
+          setScreen={setScreen}
+        />
       )}
       {screen === "home" && (
         <Camera
