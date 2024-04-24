@@ -1,6 +1,5 @@
 import { StyleSheet, View } from "react-native"
 import { Dispatch, SetStateAction } from "react"
-import type { Color } from "../types"
 import ColorPicker, { Panel3, Preview } from "reanimated-color-picker"
 
 export function PickColorScreen({
@@ -8,7 +7,7 @@ export function PickColorScreen({
   setColor,
 }: {
   color: string
-  setColor: Dispatch<SetStateAction<Color>>
+  setColor: Dispatch<SetStateAction<string>>
 }) {
   return (
     <View style={styles.container}>

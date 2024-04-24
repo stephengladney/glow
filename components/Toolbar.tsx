@@ -1,35 +1,28 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import type { Color, Screen } from "../types"
+import type { Screen } from "../types"
 import * as Brightness from "expo-brightness"
-import { Camera, CameraType } from "expo-camera"
+import type { ActionType } from "../types"
 import Ionicons from "@expo/vector-icons/Ionicons"
 
-type ActionType = "photo" | "preview"
-
 export function Toolbar({
-  color,
+  actionButton,
+  oldBrightness,
   screen,
+  setActionButton,
   setScreen,
   takePicture,
 }: {
-  color: Color
+  actionButton: ActionType
+  color: string
+  oldBrightness: number
   screen: Screen
+  setActionButton: Dispatch<SetStateAction<ActionType>>
   setScreen: Dispatch<SetStateAction<Screen>>
   takePicture: Function
 }) {
-  const [oldBrightness, setOldBrightness] = useState(0)
-  const [actionButton, setActionButton] = useState<ActionType>("preview")
-
-  useEffect(() => {
-    Brightness.getBrightnessAsync()
-      .then((val) => setOldBrightness(val))
-      .catch((e) => alert(JSON.stringify(e)))
-  }, [])
-
   const handlePhotoPress = async () => {
     await takePicture()
-    await Brightness.setBrightnessAsync(oldBrightness)
     setActionButton("preview")
   }
 
